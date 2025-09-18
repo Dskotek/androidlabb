@@ -1,19 +1,11 @@
 package com.example.learnproj
 
-import android.R.attr.onClick
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -23,15 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +39,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.learnproj.data.Games
 import com.example.learnproj.ui.theme.LearnProjTheme
-import org.intellij.lang.annotations.JdkConstants
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +48,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var games by remember { mutableStateOf<List<Games?>>(emptyList()) }
 
-                val APIKEY = "6fb4f7c4b5d247ec809896fdec6f3af4"
+                val APIKEY = "LÄGG API-NYCKEL HÄR"
                 val url = "https://api.rawg.io/api/games?key=$APIKEY&page_size=100"
 
             val jsonRequest = JsonObjectRequest(
@@ -149,12 +135,6 @@ fun ShowGames(games: List<Games>, modifier: Modifier = Modifier) {
         }
     }
 }
-
-@Composable
-fun ScrollToTopButton(onClick: () -> Unit) {
-    TODO("Not yet implemented")
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GameListPreview() {
