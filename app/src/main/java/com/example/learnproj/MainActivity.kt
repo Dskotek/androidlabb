@@ -1,18 +1,34 @@
 package com.example.learnproj
 
+import android.R.attr.onClick
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -24,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +52,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.learnproj.data.Games
 import com.example.learnproj.ui.theme.LearnProjTheme
+import org.intellij.lang.annotations.JdkConstants
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +62,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var games by remember { mutableStateOf<List<Games?>>(emptyList()) }
 
-                val APIKEY = ""
+                val APIKEY = "6fb4f7c4b5d247ec809896fdec6f3af4"
                 val url = "https://api.rawg.io/api/games?key=$APIKEY&page_size=100"
 
             val jsonRequest = JsonObjectRequest(
@@ -52,18 +70,20 @@ class MainActivity : ComponentActivity() {
                 url,
                 null, { response ->
                     val results = response.getJSONArray("results")
-                    val gameList = mutableListOf<Games>()
+                    val gameList = mutableListOf<Games?>()
 
                     for(i in 0 until results.length()) {
                         val obj = results.getJSONObject(i)
                         val id = obj.getInt("id")
                         val name = obj.getString("name")
-                        val description = obj.getString("description")
+                        val description = obj.optString("metacritic")
                         val imageUrl = obj.getString("background_image")
 
                         gameList.add(Games(id, name, description, imageUrl))
+
                     }
                     games = gameList
+                    Log.d("API Response", response.toString())
 
 
                 },
@@ -73,9 +93,9 @@ class MainActivity : ComponentActivity() {
             )
             queue.add(jsonRequest)
 
+
             LearnProjTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(),
-                    contentColor = Color(0xFF121212)) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ShowGames(
                         games = games as List<Games>,
                         modifier = Modifier.padding(innerPadding)
@@ -88,13 +108,27 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+
+
 fun ShowGames(games: List<Games>, modifier: Modifier = Modifier) {
+    val listState = rememberLazyListState()
     LazyColumn(
-        modifier = Modifier
+        state = listState,
+        modifier = Modifier,
+        contentPadding = PaddingValues(bottom = 60.dp, top = 35.dp, start = 16.dp, end = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ){
         items(games) { game ->
-            Column(modifier = Modifier.padding(16.dp)){
+            Card (modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(Color(0xFFB8E7F4))
+            ){
+                Column(modifier = Modifier.padding(16.dp)){
                 Text(text = game.name, style = MaterialTheme.typography.titleMedium)
+                    //Spacer(modifier = Modifier.height(4.dp))
                 AsyncImage(
                     model = game.imageUrl,
                     contentDescription = null,
@@ -102,17 +136,23 @@ fun ShowGames(games: List<Games>, modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(200.dp)
                 )
+                    Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = game.description,
+                    text = "Metacritic rating: ${game.description}",
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                HorizontalDivider(Modifier, thickness = 4.dp, color = Color.Black)
+                //HorizontalDivider(Modifier, thickness = 4.dp, color = Color.Black)
+                }
             }
-
         }
     }
+}
+
+@Composable
+fun ScrollToTopButton(onClick: () -> Unit) {
+    TODO("Not yet implemented")
 }
 
 @Preview(showBackground = true)
